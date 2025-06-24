@@ -1,8 +1,7 @@
 // DOM Elements
-const header = document.getElementById('header');
-const menuToggle = document.getElementById('menuToggle');
+const header = document.querySelector('.header');
+const mobileMenuToggle = document.getElementById('mobileMenuToggle');
 const mobileNav = document.getElementById('mobileNav');
-const closeBtn = document.getElementById('closeBtn');
 const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
 const sections = document.querySelectorAll('.section');
 const portfolioTabs = document.querySelectorAll('.tab-btn');
@@ -80,15 +79,98 @@ function initializeNavigation() {
     console.log('✅ Navigation initialized');
 }
 
-// Mobile Navigation
+// Mobile Navigation Functions
 function toggleMobileNav() {
-    mobileNav.classList.toggle('active');
-    document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : 'auto';
+    if (mobileNav && mobileMenuToggle) {
+        mobileNav.classList.toggle('active');
+        mobileMenuToggle.classList.toggle('active');
+        document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : 'auto';
+        
+        // Prevent background scrolling on mobile
+        if (mobileNav.classList.contains('active')) {
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+        } else {
+            document.body.style.position = '';
+            document.body.style.width = '';
+        }
+    }
 }
 
 function closeMobileNav() {
-    mobileNav.classList.remove('active');
-    document.body.style.overflow = 'auto';
+    if (mobileNav && mobileMenuToggle) {
+        mobileNav.classList.remove('active');
+        mobileMenuToggle.classList.remove('active');
+        document.body.style.overflow = 'auto';
+        document.body.style.position = '';
+        document.body.style.width = '';
+    }
+}
+
+// Initialize Mobile Navigation
+function initializeMobileNavigation() {
+    console.log('🚀 Initializing mobile navigation...');
+    
+    // Mobile menu toggle click
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleMobileNav();
+        });
+        
+        // Add touch event for better mobile responsiveness
+        mobileMenuToggle.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }, { passive: false });
+    }
+    
+    // Close mobile nav when clicking outside
+    if (mobileNav) {
+        mobileNav.addEventListener('click', function(e) {
+            if (e.target === mobileNav) {
+                closeMobileNav();
+            }
+        });
+    }
+    
+    // Mobile nav links click
+    mobileNavLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            console.log('Mobile navigation clicked:', targetId);
+            
+            // Close mobile nav first
+            closeMobileNav();
+            
+            // Then navigate
+            if (targetId.startsWith('#')) {
+                setTimeout(() => {
+                    smoothScroll(targetId);
+                }, 300); // Wait for nav to close
+            }
+        });
+        
+        // Add touch events for better mobile experience
+        link.addEventListener('touchstart', function(e) {
+            this.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+        }, { passive: true });
+        
+        link.addEventListener('touchend', function(e) {
+            this.style.backgroundColor = '';
+        }, { passive: true });
+    });
+    
+    // Handle escape key to close mobile nav
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && mobileNav.classList.contains('active')) {
+            closeMobileNav();
+        }
+    });
+    
+    console.log('✅ Mobile navigation initialized');
 }
 
 // Portfolio Tabs
@@ -379,8 +461,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize navigation
     initializeNavigation();
     
+    // Initialize mobile navigation
+    initializeMobileNavigation();
+    
     // Initialize image modal FIRST
     initializeImageModal();
+    
+    // Initialize mobile-specific features
+    initializeMobileImageHandling();
+    initializeMobileModal();
     
     // Scroll events
     const debouncedScroll = debounce(() => {
@@ -700,4 +789,137 @@ window.MarinaPortfolio = {
     switchTab,
     showEdits: window.showEdits,
     showPaintings: window.showPaintings
-}; 
+};
+
+// Add mobile-specific image handling
+function initializeMobileImageHandling() {
+    console.log('🚀 Initializing mobile image handling...');
+    
+    // Add touch interactions to portfolio items
+    const portfolioItems = document.querySelectorAll('.portfolio-item');
+    portfolioItems.forEach(item => {
+        const img = item.querySelector('img');
+        if (img) {
+            // Add touch feedback
+            item.addEventListener('touchstart', function(e) {
+                this.style.transform = 'scale(0.98)';
+                this.style.transition = 'transform 0.1s ease';
+            }, { passive: true });
+            
+            item.addEventListener('touchend', function(e) {
+                this.style.transform = '';
+                this.style.transition = 'transform 0.3s ease';
+                
+                // Open modal on touch end (after a brief delay to ensure it's not a scroll)
+                setTimeout(() => {
+                    const imageSrc = this.dataset.image || img.src;
+                    if (imageSrc) {
+                        openModal(imageSrc);
+                    }
+                }, 50);
+            }, { passive: true });
+            
+            item.addEventListener('touchcancel', function(e) {
+                this.style.transform = '';
+                this.style.transition = 'transform 0.3s ease';
+            }, { passive: true });
+        }
+    });
+    
+    // Add touch interactions to testimonial images
+    const postItems = document.querySelectorAll('.post-item');
+    postItems.forEach(item => {
+        const img = item.querySelector('img');
+        if (img) {
+            item.addEventListener('touchstart', function(e) {
+                this.style.transform = 'scale(0.98)';
+                this.style.transition = 'transform 0.1s ease';
+            }, { passive: true });
+            
+            item.addEventListener('touchend', function(e) {
+                this.style.transform = '';
+                this.style.transition = 'transform 0.3s ease';
+                
+                setTimeout(() => {
+                    const imageSrc = img.src;
+                    if (imageSrc) {
+                        openModal(imageSrc);
+                    }
+                }, 50);
+            }, { passive: true });
+            
+            item.addEventListener('touchcancel', function(e) {
+                this.style.transform = '';
+                this.style.transition = 'transform 0.3s ease';
+            }, { passive: true });
+        }
+    });
+    
+    console.log('✅ Mobile image handling initialized');
+}
+
+// Improved mobile modal handling
+function initializeMobileModal() {
+    console.log('🔧 Initializing mobile modal...');
+    
+    // Get modal elements
+    modal = document.getElementById('imageModal');
+    modalImg = document.getElementById('modalImage');
+    closeSpan = document.querySelector('.close');
+    
+    console.log('Found elements:', { modal, modalImg, closeSpan });
+    
+    if (modal && closeSpan) {
+        // Close modal on click/touch
+        closeSpan.addEventListener('click', closeModal);
+        closeSpan.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            closeModal();
+        }, { passive: false });
+        
+        // Close modal when clicking/touching outside image
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+        
+        modal.addEventListener('touchend', function(e) {
+            if (e.target === modal) {
+                e.preventDefault();
+                closeModal();
+            }
+        }, { passive: false });
+        
+        // Handle swipe gestures to close modal
+        let startY = null;
+        let startX = null;
+        
+        modal.addEventListener('touchstart', function(e) {
+            if (e.touches.length === 1) {
+                startY = e.touches[0].clientY;
+                startX = e.touches[0].clientX;
+            }
+        }, { passive: true });
+        
+        modal.addEventListener('touchmove', function(e) {
+            if (!startY || !startX || e.touches.length !== 1) return;
+            
+            const currentY = e.touches[0].clientY;
+            const currentX = e.touches[0].clientX;
+            const diffY = startY - currentY;
+            const diffX = startX - currentX;
+            
+            // Close on significant vertical swipe (up or down)
+            if (Math.abs(diffY) > 100 && Math.abs(diffY) > Math.abs(diffX)) {
+                closeModal();
+                startY = null;
+                startX = null;
+            }
+        }, { passive: true });
+        
+        console.log('✅ Mobile modal initialized');
+    } else {
+        console.error('❌ Modal elements not found');
+    }
+} 

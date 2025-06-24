@@ -2,9 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <title>Marina's House - Digital Art Portfolio</title>
     <meta name="description" content="Welcome to Marina's House - High-end digital art, custom edits, and paintings">
+    
+    <!-- Mobile-specific meta tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#FF38D3">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,11 +29,28 @@
             <div class="logo-icon">M</div>
             Marina
         </a>
-        <nav class="nav">
+        
+        <!-- Desktop Navigation -->
+        <nav class="nav desktop-nav">
             <a href="#home" class="nav-link">Home</a>
             <a href="#about" class="nav-link">About</a>
             <a href="#portfolio" class="nav-link">Portfolio</a>
             <a href="#contact" class="nav-link">Contact</a>
+        </nav>
+        
+        <!-- Mobile Hamburger -->
+        <button class="mobile-menu-toggle" id="mobileMenuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        
+        <!-- Mobile Navigation -->
+        <nav class="mobile-nav" id="mobileNav">
+            <a href="#home" class="mobile-nav-link">Home</a>
+            <a href="#about" class="mobile-nav-link">About</a>
+            <a href="#portfolio" class="mobile-nav-link">Portfolio</a>
+            <a href="#contact" class="mobile-nav-link">Contact</a>
         </nav>
     </header>
 
@@ -88,10 +110,10 @@
                     <div class="about-text">
                         <h2 class="about-title">About me</h2>
                         <p class="about-description">
-                            I’m Marina and this is my house. Not with walls and windows, but with color, distortion, feeling, and chaos. My art lives somewhere between Cyber Surrealism and Neo-Expressionism, two worlds where emotions glitch and beauty breaks the rules.
-I started creating when I was 15 years old. Back then, I was making edits of the artist Tinashe, just for fun, until she saw my work, shared it, and said she was a fan. That moment unlocked something in me. Since then, I’ve been building this house, room by room, artwork by artwork.
-My style is messy on purpose. Weird on purpose. I don’t believe in clean lines or making things look „normal,” because we aren’t normal. I believe art should be as unpredictable as we are inside, layered, strange, alive.
-So… welcome in. Take your shoes off. Stay as long as you want.
+                            I'm Marina and this is my house. Not with walls and windows, but with color, distortion, feeling, and chaos. My art lives somewhere between Cyber Surrealism and Neo-Expressionism, two worlds where emotions glitch and beauty breaks the rules.
+I started creating when I was 15 years old. Back then, I was making edits of the artist Tinashe, just for fun, until she saw my work, shared it, and said she was a fan. That moment unlocked something in me. Since then, I've been building this house, room by room, artwork by artwork.
+My style is messy on purpose. Weird on purpose. I don't believe in clean lines or making things look "normal," because we aren't normal. I believe art should be as unpredictable as we are inside, layered, strange, alive.
+So... welcome in. Take your shoes off. Stay as long as you want.
                         </p>
                     </div>
                 </div>
