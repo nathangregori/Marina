@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Marina's Website Functions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-image {
+            width: 200px;
+            height: 150px;
+            object-fit: cover;
+            margin: 10px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .test-button {
+            background: #FF38D3;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>Marina's Website Functionality Test</h1>
+    
+    <div class="test-section">
+        <h2>✅ Image Modal Test</h2>
+        <p>Click on any image below to test the full-screen modal:</p>
+        <img src="./Edits/1.jpeg" alt="Test Edit 1" class="test-image">
+        <img src="./paintings/2.jpeg" alt="Test Painting 1" class="test-image">
+        <img src="./about me/1.jpg" alt="Test About" class="test-image">
+        <div id="image-test-status" class="status success">
+            <strong>Expected Result:</strong> Clicking images should open them in full-screen modal with smooth animation, close button, and ESC key support.
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>✅ Email Form Test</h2>
+        <p>Test the email functionality:</p>
+        <button class="test-button" onclick="testCustomForm()">Test Custom Form Email</button>
+        <button class="test-button" onclick="testCollabForm()">Test Collaboration Form Email</button>
+        <div id="email-test-status" class="status success">
+            <strong>Expected Result:</strong> Forms should open email client with pre-filled subject and body, sending to marinagreenca333@gmail.com
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📋 Test Results Log</h2>
+        <div id="test-log" style="background: #f8f9fa; padding: 15px; border-radius: 5px; font-family: monospace; height: 200px; overflow-y: auto;">
+            <div>🚀 Test page loaded successfully!</div>
+        </div>
+    </div>
+
+    <!-- Include the main scripts -->
+    <script src="https://unpkg.com/@phosphor-icons/web@2.0.3"></script>
+    <script src="script.js"></script>
+    
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('test-log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function testCustomForm() {
+            log('🧪 Testing Custom Form Email...');
+            
+            // Simulate form data
+            const formData = {
+                name: 'Test User',
+                email: 'test@example.com',
+                requestType: 'Custom Edit',
+                description: 'This is a test request for custom artwork.',
+                budget: '$500'
+            };
+            
+            // Create email subject and body
+            const emailSubject = `Custom ${formData.requestType} Request from ${formData.name}`;
+            const emailBody = `
+New Custom Request:
+
+Name: ${formData.name}
+Email: ${formData.email}
+Request Type: ${formData.requestType}
+Budget: ${formData.budget}
+
+Description:
+${formData.description}
+
+---
+Sent from Marina's Portfolio Website
+            `.trim();
+            
+            // Create mailto link
+            const mailtoLink = `mailto:marinagreenca333@gmail.com?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+            
+            log('✅ Custom form mailto link created');
+            log(`📧 Subject: ${emailSubject}`);
+            log(`🔗 Opening email client...`);
+            
+            // Open email client
+            window.location.href = mailtoLink;
+        }
+        
+        function testCollabForm() {
+            log('🧪 Testing Collaboration Form Email...');
+            
+            // Simulate form data
+            const formData = {
+                name: 'Test Collaborator',
+                email: 'collab@example.com',
+                brandName: 'Test Brand',
+                description: 'This is a test collaboration proposal.',
+                website: 'https://testbrand.com'
+            };
+            
+            // Create email subject and body
+            const emailSubject = `Collaboration Proposal from ${formData.name}`;
+            const emailBody = `
+New Collaboration Proposal:
+
+Name: ${formData.name}
+Email: ${formData.email}
+Brand/Project: ${formData.brandName}
+Website/Links: ${formData.website || 'Not provided'}
+
+Description:
+${formData.description}
+
+---
+Sent from Marina's Portfolio Website
+            `.trim();
+            
+            // Create mailto link
+            const mailtoLink = `mailto:marinagreenca333@gmail.com?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+            
+            log('✅ Collaboration form mailto link created');
+            log(`📧 Subject: ${emailSubject}`);
+            log(`🔗 Opening email client...`);
+            
+            // Open email client
+            window.location.href = mailtoLink;
+        }
+        
+        // Test image click functionality
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('test-image')) {
+                log(`🖼️ Test image clicked: ${e.target.alt}`);
+                log('✅ Modal should open with the clicked image');
+            }
+        });
+        
+        // Test modal events
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('imageModal');
+                if (modal && modal.classList.contains('visible')) {
+                    log('⌨️ ESC key pressed - modal should close');
+                }
+            }
+        });
+        
+        log('✅ Test page ready! Try clicking images and form buttons.');
+    </script>
+</body>
+</html> 
