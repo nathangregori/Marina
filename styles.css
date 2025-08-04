@@ -82,8 +82,8 @@ p, span:not(.skill-tag), li:not(.nav-list li), label, input, textarea, select {
 }
 
 .logo-icon {
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     display: flex;
     align-items: center;
     justify-content: center;
