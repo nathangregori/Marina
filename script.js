@@ -7,9 +7,15 @@ const sections = document.querySelectorAll('.section');
 const portfolioTabs = document.querySelectorAll('.tab-btn');
 const portfolioContents = document.querySelectorAll('.portfolio-content');
 const portfolioItems = document.querySelectorAll('.portfolio-item');
-const contactForm = document.querySelector('.contact-form');
 const portfolioCircles = document.querySelectorAll('.portfolio-circle');
 const portfolioSections = document.querySelectorAll('.portfolio-section');
+const mergedContactForm = document.querySelector('.merged-contact-form');
+
+const EMAIL_JS_CONFIG = {
+    serviceId: 'YOUR_EMAILJS_SERVICE_ID',
+    templateId: 'YOUR_EMAILJS_TEMPLATE_ID',
+    publicKey: 'YOUR_EMAILJS_PUBLIC_KEY'
+};
 
 // Debug: Check if elements are found
 console.log('Portfolio circles found:', portfolioCircles.length);
@@ -342,24 +348,6 @@ function showPaintings() {
     });
 }
 
-// Form Submission
-function handleFormSubmit(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(contactForm);
-    const formObject = {};
-    
-    formData.forEach((value, key) => {
-        formObject[key] = value;
-    });
-    
-    console.log('Form submitted:', formObject);
-    
-    // Here you would typically send the data to a server
-    alert('Thank you for your message! I\'ll get back to you soon.');
-    contactForm.reset();
-}
-
 // Parallax effect
 function handleParallax() {
     const scrolled = window.pageYOffset;
@@ -506,11 +494,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
-    // Contact form
-    if (contactForm) {
-        contactForm.addEventListener('submit', handleFormSubmit);
-    }
-    
     // Portfolio navigation - Add click handlers as backup
     const editsBtn = document.querySelector('[data-category="edits"]');
     const paintingsBtn = document.querySelector('[data-category="paintings"]');
@@ -536,140 +519,74 @@ document.addEventListener('DOMContentLoaded', () => {
         showEdits();
     }, 500);
     
-    // Email forms functionality
-    const customForm = document.querySelector('.custom-form');
-    const collaborationForm = document.querySelector('.collaboration-form');
-    
-    async function sendEmail(formData, formType) {
-        const subject = formType === 'custom' ? 
-            `Custom Art Request from ${formData.name}` : 
-            `Collaboration Proposal from ${formData.name}`;
-        
-        let body = '';
-        if (formType === 'custom') {
-            body = `Name: ${formData.name}%0D%0A` +
-                   `Email: ${formData.email}%0D%0A` +
-                   `Request Type: ${formData.requestType}%0D%0A` +
-                   `Budget: ${formData.budget}%0D%0A%0D%0A` +
-                   `Description:%0D%0A${formData.description}`;
+    let emailJsReady = false;
+    if (window.emailjs) {
+        if (
+            EMAIL_JS_CONFIG.publicKey &&
+            !EMAIL_JS_CONFIG.publicKey.includes('YOUR_EMAILJS')
+        ) {
+            emailjs.init({
+                publicKey: EMAIL_JS_CONFIG.publicKey
+            });
+            emailJsReady = true;
         } else {
-            body = `Name: ${formData.name}%0D%0A` +
-                   `Email: ${formData.email}%0D%0A` +
-                   `Brand/Project: ${formData.brandName}%0D%0A` +
-                   `Website: ${formData.website || 'Not provided'}%0D%0A%0D%0A` +
-                   `Collaboration Idea:%0D%0A${formData.description}`;
+            console.warn('EmailJS public key missing. Update EMAIL_JS_CONFIG.');
         }
-        
-        const mailtoLink = `mailto:marinagreenca333@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`;
-        window.open(mailtoLink);
-        
-        const submitBtn = formType === 'custom' ? 
-            customForm.querySelector('.submit-btn') : 
-            collaborationForm.querySelector('.submit-btn');
-        
-        const originalBtnText = submitBtn.innerHTML;
-        
-        try {
-            submitBtn.innerHTML = '<i class="ph ph-check"></i> Opening email client...';
-            submitBtn.disabled = true;
-            submitBtn.style.background = 'linear-gradient(145deg, #4CAF50, #45a049)';
-            submitBtn.style.color = 'white';
+    } else {
+        console.warn('EmailJS library failed to load.');
+    }
+
+    if (mergedContactForm) {
+        mergedContactForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
             
-            setTimeout(() => {
-                submitBtn.innerHTML = '<i class="ph ph-check"></i> Email opened! Please send it.';
-                submitBtn.style.background = 'linear-gradient(145deg, #2196F3, #1976D2)';
-                submitBtn.style.color = 'white';
+            const requestSelect = mergedContactForm.querySelector('select[name="RequestType"]');
+            if (!requestSelect || !requestSelect.value) {
+                alert('Please select what you are looking for.');
+                return;
+            }
+            
+            if (!emailJsReady) {
+                alert('The email service is not configured yet. Please email marina@marinahouse.art directly.');
+                return;
+            }
+            
+            const submitBtn = mergedContactForm.querySelector('.submit-btn');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="ph ph-spinner-gap"></i> Sending...';
+            
+            const formData = new FormData(mergedContactForm);
+            const templateParams = {
+                subject: `${requestSelect.value} inquiry via Marina's House`,
+                name: formData.get('Name'),
+                email: formData.get('Email'),
+                requestType: formData.get('RequestType'),
+                brandOrProject: formData.get('BrandOrProject') || 'Not provided',
+                description: formData.get('Description'),
+                budget: formData.get('Budget') || 'Not provided',
+                links: formData.get('Links') || 'Not provided'
+            };
+            
+            try {
+                await emailjs.send(
+                    EMAIL_JS_CONFIG.serviceId,
+                    EMAIL_JS_CONFIG.templateId,
+                    templateParams
+                );
                 
+                submitBtn.innerHTML = '<i class="ph ph-check"></i> Sent!';
+                mergedContactForm.reset();
+            } catch (error) {
+                console.error('EmailJS error:', error);
+                submitBtn.innerHTML = '<i class="ph ph-warning"></i> Error';
+                alert('Something went wrong while sending. Please try again or email marina@marinahouse.art directly.');
+            } finally {
                 setTimeout(() => {
                     submitBtn.innerHTML = originalBtnText;
                     submitBtn.disabled = false;
-                    submitBtn.style.background = '';
-                    submitBtn.style.color = '';
-                    
-                    if (formType === 'custom') {
-                        customForm.reset();
-                    } else {
-                        collaborationForm.reset();
-                    }
-                }, 3000);
-            }, 1000);
-            
-        } catch (error) {
-            console.error('Error:', error);
-            submitBtn.innerHTML = '<i class="ph ph-warning"></i> Error - Please try again';
-            submitBtn.style.background = 'linear-gradient(145deg, #f44336, #d32f2f)';
-            submitBtn.style.color = 'white';
-            
-            setTimeout(() => {
-                submitBtn.innerHTML = originalBtnText;
-                submitBtn.disabled = false;
-                submitBtn.style.background = '';
-                submitBtn.style.color = '';
-            }, 3000);
-        }
-    }
-
-    if (customForm) {
-        customForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const inputs = this.querySelectorAll('input[type="text"]');
-            const name = inputs[0].value;
-            const budget = inputs[1].value;
-            const email = this.querySelector('input[type="email"]').value;
-            const requestType = this.querySelector('select').value;
-            const description = this.querySelector('textarea').value;
-            
-            if (!name || !email || !requestType || !description || !budget) {
-                alert('Please fill in all required fields');
-                return;
+                }, 2500);
             }
-            
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                alert('Please enter a valid email address');
-                return;
-            }
-            
-            sendEmail({
-                name,
-                email,
-                requestType,
-                description,
-                budget
-            }, 'custom');
-        });
-    }
-
-    if (collaborationForm) {
-        collaborationForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const inputs = this.querySelectorAll('input[type="text"], input[type="email"], input[type="url"]');
-            const name = inputs[0].value;
-            const email = inputs[1].value;
-            const brandName = inputs[2].value;
-            const website = inputs[3].value;
-            const description = this.querySelector('textarea').value;
-            
-            if (!name || !email || !brandName || !description) {
-                alert('Please fill in all required fields');
-                return;
-            }
-            
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                alert('Please enter a valid email address');
-                return;
-            }
-            
-            sendEmail({
-                name,
-                email,
-                brandName,
-                description,
-                website
-            }, 'collaboration');
         });
     }
     
