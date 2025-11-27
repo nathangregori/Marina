@@ -600,10 +600,10 @@ window.addEventListener('resize', debounce(() => {
     }
 }, 250));
 
-// Prevent context menu for better UX
-document.addEventListener('contextmenu', (e) => {
-    e.preventDefault();
-});
+// Prevent context menu for better UX (disabled to allow right-click and dev tools)
+// document.addEventListener('contextmenu', (e) => {
+//     e.preventDefault();
+// });
 
 // Add CSS for floating animation
 const style = document.createElement('style');
