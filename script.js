@@ -12,9 +12,9 @@ const portfolioSections = document.querySelectorAll('.portfolio-section');
 const mergedContactForm = document.querySelector('.merged-contact-form');
 
 const EMAIL_JS_CONFIG = {
-    serviceId: 'YOUR_EMAILJS_SERVICE_ID',
-    templateId: 'YOUR_EMAILJS_TEMPLATE_ID',
-    publicKey: 'YOUR_EMAILJS_PUBLIC_KEY'
+    serviceId: 'service_inrh3ml',
+    templateId: 'template_3kxydkj',
+    publicKey: 'hau0K0IPygzW7b-N-'
 };
 
 // Debug: Check if elements are found
@@ -547,7 +547,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             if (!emailJsReady) {
-                alert('The email service is not configured yet. Please email marina@marinahouse.art directly.');
+                alert('The email service is not configured yet. Please email zeutreiofficiel@gmail.com directly.');
                 return;
             }
             
@@ -580,7 +580,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 console.error('EmailJS error:', error);
                 submitBtn.innerHTML = '<i class="ph ph-warning"></i> Error';
-                alert('Something went wrong while sending. Please try again or email marina@marinahouse.art directly.');
+                alert('Something went wrong while sending. Please try again or email zeutreiofficiel@gmail.com directly.');
             } finally {
                 setTimeout(() => {
                     submitBtn.innerHTML = originalBtnText;
