@@ -12,7 +12,7 @@ const portfolioSections = document.querySelectorAll('.portfolio-section');
 const mergedContactForm = document.querySelector('.merged-contact-form');
 
 const EMAIL_JS_CONFIG = {
-    serviceId: 'service_inrh3ml',
+    serviceId: 'service_7f9lmph',
     templateId: 'template_3kxydkj',
     publicKey: 'hau0K0IPygzW7b-N-'
 };
@@ -520,43 +520,71 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 500);
     
     let emailJsReady = false;
-    if (window.emailjs) {
-        if (
-            EMAIL_JS_CONFIG.publicKey &&
-            !EMAIL_JS_CONFIG.publicKey.includes('YOUR_EMAILJS')
-        ) {
-            emailjs.init({
-                publicKey: EMAIL_JS_CONFIG.publicKey
-            });
-            emailJsReady = true;
+    
+    // Initialize EmailJS
+    function initializeEmailJS() {
+        if (window.emailjs) {
+            if (
+                EMAIL_JS_CONFIG.publicKey &&
+                !EMAIL_JS_CONFIG.publicKey.includes('YOUR_EMAILJS') &&
+                EMAIL_JS_CONFIG.serviceId &&
+                EMAIL_JS_CONFIG.templateId
+            ) {
+                try {
+                    emailjs.init({
+                        publicKey: EMAIL_JS_CONFIG.publicKey
+                    });
+                    emailJsReady = true;
+                    console.log('✅ EmailJS initialized successfully');
+                } catch (error) {
+                    console.error('❌ EmailJS initialization error:', error);
+                    emailJsReady = false;
+                }
+            } else {
+                console.warn('⚠️ EmailJS config incomplete. Check EMAIL_JS_CONFIG.');
+            }
         } else {
-            console.warn('EmailJS public key missing. Update EMAIL_JS_CONFIG.');
+            console.warn('⚠️ EmailJS library not loaded. Check if script is included in HTML.');
         }
-    } else {
-        console.warn('EmailJS library failed to load.');
     }
+    
+    // Try to initialize EmailJS immediately
+    initializeEmailJS();
+    
+    // Also try after a short delay in case library loads late
+    setTimeout(initializeEmailJS, 500);
 
-    if (mergedContactForm) {
-        mergedContactForm.addEventListener('submit', async (event) => {
+    // Get form by ID or class as fallback
+    const contactForm = document.getElementById('marinaContactForm') || 
+                        document.querySelector('.merged-contact-form') || 
+                        mergedContactForm;
+    
+    if (contactForm) {
+        console.log('✅ Contact form found:', contactForm);
+        contactForm.addEventListener('submit', async (event) => {
             event.preventDefault();
+            event.stopPropagation();
             
-            const requestSelect = mergedContactForm.querySelector('select[name="RequestType"]');
+            console.log('📧 Form submitted, EmailJS ready:', emailJsReady);
+            
+            const requestSelect = contactForm.querySelector('select[name="RequestType"]');
             if (!requestSelect || !requestSelect.value) {
                 alert('Please select what you are looking for.');
                 return;
             }
             
             if (!emailJsReady) {
+                console.error('❌ EmailJS not ready. Config:', EMAIL_JS_CONFIG);
                 alert('The email service is not configured yet. Please email zeutreiofficiel@gmail.com directly.');
                 return;
             }
             
-            const submitBtn = mergedContactForm.querySelector('.submit-btn');
+            const submitBtn = contactForm.querySelector('.submit-btn');
             const originalBtnText = submitBtn.innerHTML;
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="ph ph-spinner-gap"></i> Sending...';
             
-            const formData = new FormData(mergedContactForm);
+            const formData = new FormData(contactForm);
             const templateParams = {
                 subject: `${requestSelect.value} inquiry via Marina's House`,
                 name: formData.get('Name'),
@@ -569,18 +597,30 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             
             try {
-                await emailjs.send(
+                console.log('📤 Sending email via EmailJS...', {
+                    serviceId: EMAIL_JS_CONFIG.serviceId,
+                    templateId: EMAIL_JS_CONFIG.templateId,
+                    params: templateParams
+                });
+                
+                const response = await emailjs.send(
                     EMAIL_JS_CONFIG.serviceId,
                     EMAIL_JS_CONFIG.templateId,
                     templateParams
                 );
                 
+                console.log('✅ Email sent successfully:', response);
                 submitBtn.innerHTML = '<i class="ph ph-check"></i> Sent!';
-                mergedContactForm.reset();
+                contactForm.reset();
             } catch (error) {
-                console.error('EmailJS error:', error);
+                console.error('❌ EmailJS error details:', {
+                    error: error,
+                    status: error?.status,
+                    text: error?.text,
+                    config: EMAIL_JS_CONFIG
+                });
                 submitBtn.innerHTML = '<i class="ph ph-warning"></i> Error';
-                alert('Something went wrong while sending. Please try again or email zeutreiofficiel@gmail.com directly.');
+                alert('Something went wrong while sending. Please check the console for details or email zeutreiofficiel@gmail.com directly.');
             } finally {
                 setTimeout(() => {
                     submitBtn.innerHTML = originalBtnText;
@@ -588,6 +628,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 2500);
             }
         });
+    } else {
+        console.error('❌ Contact form not found! Check HTML for id="marinaContactForm" or class="merged-contact-form"');
     }
     
     console.log('✅ All event listeners initialized');
@@ -600,7 +642,8 @@ window.addEventListener('resize', debounce(() => {
     }
 }, 250));
 
-// Prevent context menu for better UX (disabled to allow right-click and dev tools)
+// Right-click is ENABLED - users can right-click to access Inspect/DevTools
+// The contextmenu event listener is disabled below to allow right-click functionality
 // document.addEventListener('contextmenu', (e) => {
 //     e.preventDefault();
 // });
