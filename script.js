@@ -467,24 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     window.addEventListener('scroll', debouncedScroll);
     
-    // Navigation events
-    if (menuToggle) {
-        menuToggle.addEventListener('click', toggleMobileNav);
-    }
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closeMobileNav);
-    }
-    
-    // Close mobile nav when clicking on links
-    mobileNavLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const target = link.getAttribute('href');
-            closeMobileNav();
-            setTimeout(() => smoothScroll(target), 300);
-        });
-    });
-    
+    // Mobile navigation is already handled by initializeMobileNavigation() function
     // Desktop navigation is handled by initializeNavigation() function
     
     // Portfolio tabs
