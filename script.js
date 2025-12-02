@@ -12,9 +12,9 @@ const portfolioSections = document.querySelectorAll('.portfolio-section');
 const mergedContactForm = document.querySelector('.merged-contact-form');
 
 const EMAIL_JS_CONFIG = {
-    serviceId: 'service_7f9lmph',
-    templateId: 'template_3kxydkj',
-    publicKey: 'hau0K0IPygzW7b-N-'
+    serviceId: 'service_dt22iys',
+    templateId: 'template_4bsn8xs',
+    publicKey: 'iCFWisIaZgPjoj4q5'
 };
 
 // Debug: Check if elements are found
@@ -558,7 +558,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (!emailJsReady) {
                 console.error('❌ EmailJS not ready. Config:', EMAIL_JS_CONFIG);
-                alert('The email service is not configured yet. Please email zeutreiofficiel@gmail.com directly.');
+                alert('The email service is not configured yet. Please email marinanegrescu333@gmail.com directly.');
                 return;
             }
             
@@ -603,7 +603,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     config: EMAIL_JS_CONFIG
                 });
                 submitBtn.innerHTML = '<i class="ph ph-warning"></i> Error';
-                alert('Something went wrong while sending. Please check the console for details or email zeutreiofficiel@gmail.com directly.');
+                alert('Something went wrong while sending. Please check the console for details or email marinanegrescu333@gmail.com directly.');
             } finally {
                 setTimeout(() => {
                     submitBtn.innerHTML = originalBtnText;
