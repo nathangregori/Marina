@@ -896,6 +896,105 @@ p, span:not(.skill-tag), li:not(.nav-list li), label, input, textarea, select {
     box-shadow: 0 0 0 3px rgba(255, 56, 211, 0.2);
 }
 
+/* Custom Dropdown Component - Replaces native select for consistent cross-platform styling */
+.custom-select {
+    position: relative;
+    width: 100%;
+    cursor: pointer;
+}
+
+.custom-select-selected {
+    padding: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 16px;
+    backdrop-filter: blur(10px);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    user-select: none;
+    opacity: 0.8;
+}
+
+.custom-select-selected::after {
+    content: '▼';
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    opacity: 0.7;
+    transition: transform 0.3s ease;
+}
+
+.custom-select.open .custom-select-selected::after {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.custom-select.open .custom-select-selected,
+.custom-select:focus .custom-select-selected {
+    outline: none;
+    border-color: var(--primary-magenta);
+    box-shadow: 0 0 0 3px rgba(255, 56, 211, 0.2);
+}
+
+.custom-select-options {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.95);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+.custom-select.open .custom-select-options {
+    max-height: 400px;
+    opacity: 1;
+    visibility: visible;
+}
+
+.custom-select-option {
+    padding: 15px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    opacity: 0.8;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.custom-select-option:last-child {
+    border-bottom: none;
+}
+
+.custom-select-option:hover,
+.custom-select-option.highlighted {
+    background-color: rgba(255, 56, 211, 0.3);
+    color: white;
+    opacity: 1;
+}
+
+.custom-select-option.selected {
+    background-color: rgba(255, 56, 211, 0.2);
+    color: var(--primary-magenta);
+    opacity: 1;
+    font-weight: 500;
+}
+
+.custom-select-option:focus {
+    outline: 2px solid var(--primary-magenta);
+    outline-offset: -2px;
+}
+
 .file-upload-label {
     display: inline-block;
     padding: 15px 20px;
@@ -1564,6 +1663,21 @@ img:not(.modal-content):hover {
         border-color: var(--primary-magenta);
         outline: none;
         box-shadow: 0 0 0 3px rgba(255, 56, 211, 0.1);
+    }
+    
+    /* Custom dropdown mobile styles */
+    .custom-select-selected {
+        font-size: 16px !important;
+        padding: 12px 15px;
+    }
+    
+    .custom-select-options {
+        max-height: 300px;
+    }
+    
+    .custom-select-option {
+        padding: 12px 15px;
+        font-size: 16px !important;
     }
     
     .collaboration .file-upload-label {

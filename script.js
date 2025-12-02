@@ -435,6 +435,171 @@ function debounce(func, wait) {
     };
 }
 
+// Custom Dropdown Component - Replaces native select for consistent cross-platform styling
+function initializeCustomDropdown() {
+    console.log('🎨 Initializing custom dropdown...');
+    
+    const customSelect = document.getElementById('customRequestTypeSelect');
+    const hiddenSelect = document.getElementById('requestTypeSelect');
+    const displayElement = document.getElementById('customSelectDisplay');
+    const optionsContainer = document.getElementById('customSelectOptions');
+    const options = optionsContainer.querySelectorAll('.custom-select-option');
+    
+    if (!customSelect || !hiddenSelect || !displayElement || !optionsContainer) {
+        console.warn('⚠️ Custom dropdown elements not found');
+        return;
+    }
+    
+    let isOpen = false;
+    let highlightedIndex = -1;
+    
+    // Sync hidden select with custom dropdown display
+    function syncWithHiddenSelect() {
+        const selectedValue = hiddenSelect.value;
+        const selectedOption = hiddenSelect.options[hiddenSelect.selectedIndex];
+        displayElement.textContent = selectedOption ? selectedOption.textContent : 'What are you looking for?';
+        
+        // Update visual selection in options
+        options.forEach((option, index) => {
+            option.classList.remove('selected');
+            if (option.dataset.value === selectedValue) {
+                option.classList.add('selected');
+                highlightedIndex = index;
+            }
+        });
+    }
+    
+    // Open/close dropdown
+    function toggleDropdown() {
+        isOpen = !isOpen;
+        customSelect.classList.toggle('open', isOpen);
+        customSelect.setAttribute('aria-expanded', isOpen.toString());
+        
+        if (isOpen) {
+            // Reset highlighted index to selected option
+            const selectedValue = hiddenSelect.value;
+            options.forEach((option, index) => {
+                if (option.dataset.value === selectedValue) {
+                    highlightedIndex = index;
+                    option.classList.add('highlighted');
+                } else {
+                    option.classList.remove('highlighted');
+                }
+            });
+        }
+    }
+    
+    function closeDropdown() {
+        if (isOpen) {
+            isOpen = false;
+            customSelect.classList.remove('open');
+            customSelect.setAttribute('aria-expanded', 'false');
+            options.forEach(option => option.classList.remove('highlighted'));
+            highlightedIndex = -1;
+        }
+    }
+    
+    // Select an option
+    function selectOption(optionElement) {
+        const value = optionElement.dataset.value;
+        hiddenSelect.value = value;
+        hiddenSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        syncWithHiddenSelect();
+        closeDropdown();
+    }
+    
+    // Keyboard navigation
+    function handleKeyboard(e) {
+        if (!isOpen) {
+            // Open dropdown with Enter or Space
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleDropdown();
+            }
+            return;
+        }
+        
+        // Handle keyboard when dropdown is open
+        switch(e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                highlightedIndex = (highlightedIndex + 1) % options.length;
+                options.forEach((opt, idx) => {
+                    opt.classList.toggle('highlighted', idx === highlightedIndex);
+                });
+                options[highlightedIndex].scrollIntoView({ block: 'nearest' });
+                break;
+                
+            case 'ArrowUp':
+                e.preventDefault();
+                highlightedIndex = highlightedIndex <= 0 ? options.length - 1 : highlightedIndex - 1;
+                options.forEach((opt, idx) => {
+                    opt.classList.toggle('highlighted', idx === highlightedIndex);
+                });
+                options[highlightedIndex].scrollIntoView({ block: 'nearest' });
+                break;
+                
+            case 'Enter':
+                e.preventDefault();
+                if (highlightedIndex >= 0 && highlightedIndex < options.length) {
+                    selectOption(options[highlightedIndex]);
+                }
+                break;
+                
+            case 'Escape':
+                e.preventDefault();
+                closeDropdown();
+                customSelect.focus();
+                break;
+                
+            case 'Tab':
+                closeDropdown();
+                break;
+        }
+    }
+    
+    // Click on dropdown to toggle
+    customSelect.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleDropdown();
+    });
+    
+    // Click on option to select
+    options.forEach((option) => {
+        option.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectOption(option);
+        });
+        
+        // Mouse hover highlights option
+        option.addEventListener('mouseenter', () => {
+            if (isOpen) {
+                options.forEach(opt => opt.classList.remove('highlighted'));
+                option.classList.add('highlighted');
+                highlightedIndex = Array.from(options).indexOf(option);
+            }
+        });
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (isOpen && !customSelect.contains(e.target)) {
+            closeDropdown();
+        }
+    });
+    
+    // Keyboard accessibility
+    customSelect.addEventListener('keydown', handleKeyboard);
+    
+    // Sync with hidden select changes (if changed programmatically)
+    hiddenSelect.addEventListener('change', syncWithHiddenSelect);
+    
+    // Initialize display
+    syncWithHiddenSelect();
+    
+    console.log('✅ Custom dropdown initialized');
+}
+
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 DOM Content Loaded - Starting initialization...');
@@ -458,6 +623,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize mobile-specific features
     initializeMobileImageHandling();
     initializeMobileModal();
+    
+    // Initialize custom dropdown
+    initializeCustomDropdown();
     
     // Scroll events
     const debouncedScroll = debounce(() => {

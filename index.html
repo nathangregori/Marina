@@ -401,7 +401,8 @@ So... welcome in. Take your shoes off. Stay as long as you want.
                                     <input type="email" name="Email" placeholder="Email" required>
                                 </div>
                                 <div class="form-row">
-                                    <select name="RequestType" required>
+                                    <!-- Hidden native select for form submission -->
+                                    <select name="RequestType" id="requestTypeSelect" required style="display: none;">
                                         <option value="">What are you looking for?</option>
                                         <option value="Custom Edit">Custom Edit</option>
                                         <option value="Painting">Custom Painting</option>
@@ -409,6 +410,18 @@ So... welcome in. Take your shoes off. Stay as long as you want.
                                         <option value="Collaboration">Collaboration</option>
                                         <option value="Other">Something Else</option>
                                     </select>
+                                    <!-- Custom dropdown component -->
+                                    <div class="custom-select" id="customRequestTypeSelect" role="combobox" aria-expanded="false" aria-haspopup="listbox" tabindex="0">
+                                        <div class="custom-select-selected" id="customSelectDisplay">What are you looking for?</div>
+                                        <div class="custom-select-options" id="customSelectOptions" role="listbox">
+                                            <div class="custom-select-option" data-value="" role="option" tabindex="-1">What are you looking for?</div>
+                                            <div class="custom-select-option" data-value="Custom Edit" role="option" tabindex="-1">Custom Edit</div>
+                                            <div class="custom-select-option" data-value="Painting" role="option" tabindex="-1">Custom Painting</div>
+                                            <div class="custom-select-option" data-value="Mixed Media" role="option" tabindex="-1">Mixed Media</div>
+                                            <div class="custom-select-option" data-value="Collaboration" role="option" tabindex="-1">Collaboration</div>
+                                            <div class="custom-select-option" data-value="Other" role="option" tabindex="-1">Something Else</div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-row">
                                     <input type="text" name="BrandOrProject" placeholder="Brand / project name (optional)">
